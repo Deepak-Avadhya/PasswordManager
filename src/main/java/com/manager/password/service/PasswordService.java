@@ -8,7 +8,8 @@ import java.io.IOException;
 @Component
 public interface PasswordService {
 
-    Entry read(String key) throws IOException;
-    Boolean update(String key,String value) throws IOException;
-    Boolean delete(String key) throws IOException;
+    Entry read(Entry entry,Boolean isEncrypt,String pHash) throws Exception;
+    Boolean update(Entry entry,Boolean isEncrypt,String pHash) throws Exception;
+    Boolean delete(Entry entry,Boolean isEncrypt,String pHash) throws IOException;
+    String getHash(String plainText);
 }

@@ -24,6 +24,10 @@ public abstract class BaseDiskIO implements DiskIO {
         try {
             this.config = config;
             if(f == null){
+                File tmp = new File(config.getDataDir().getAbsolutePath());
+                if(!tmp.exists()){
+                    tmp.mkdir();
+                }
                 this.file = new File(config.getDataFileName("dat"));
             }
             if (!this.file.exists()) {

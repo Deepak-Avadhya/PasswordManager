@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.InvalidKeyException;
 
 @Controller
 @RequestMapping("/passwordManager")
@@ -48,22 +49,14 @@ public class PasswordController {
         if(isEncrypt && StringUtils.isEmpty(password)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if(isEncrypt){
-            try {
-                key=aesUtil.encrypt(key,password);
-                value=aesUtil.encrypt(value,password);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        }
         try {
-            Boolean res = passwordService.update(key,value);
+            Boolean res = passwordService.update(new Entry(key,value),isEncrypt,passwordService.getHash(password));
             if(res)return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        } catch (InvalidKeyException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            logger.error("Unknown error occurred", e);
-            e.fillInStackTrace();
-            e.getMessage();
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -79,31 +72,14 @@ public class PasswordController {
         if(isEncrypt && StringUtils.isEmpty(password)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if(isEncrypt){
-            try {
-                key=aesUtil.encrypt(key,password);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        }
         try {
-            Entry res = passwordService.read(key);
-            if(isEncrypt){
-                try {
-                    String decVal=aesUtil.decrypt(res.getValue(),password);
-                    Entry decEntry = new Entry(key,decVal);
-                    return new ResponseEntity<>(gson.toJson(decEntry),HttpStatus.ACCEPTED);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                }
-            }
+            Entry res = passwordService.read(new Entry(key,null),isEncrypt,passwordService.getHash(password));
             return new ResponseEntity<>(gson.toJson(res),HttpStatus.ACCEPTED);
+        } catch (InvalidKeyException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            logger.error("Unknown error occurred", e);
-            e.fillInStackTrace();
-            e.getMessage();
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
     }

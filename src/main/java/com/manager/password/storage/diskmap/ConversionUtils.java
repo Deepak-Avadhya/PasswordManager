@@ -6,36 +6,14 @@ import com.manager.password.storage.diskmap.utils.ObjectConverter;
 import java.io.Serializable;
 
 public class ConversionUtils {
-    private static final int poly = 0x1021;
-
-    private static final int[] crcTable = new int[256];
-
-    static {
-        // initialise scrambler table
-        for (int i = 0; i < 256; i++) {
-            int fcs = 0;
-            int d = i << 8;
-            for (int k = 0; k < 8; k++) {
-                if (((fcs ^ d) & 0x8000) != 0) {
-                    fcs = (fcs << 1) ^ poly;
-                } else {
-                    fcs = (fcs << 1);
-                }
-                d <<= 1;
-                fcs &= 0xffff;
-            }
-            crcTable[i] = fcs;
-        }
-    }
 
     public static final ConversionUtils instance = new ConversionUtils();
-
     private ObjectConverter os;
 
     public ConversionUtils() {
-        try{
+        try {
             os = new DefaultObjectConverter();
-        }catch(Exception e){
+        } catch (Exception e) {
             System.err.println("Unable to create hessian object convertor, using the default convertor.");
             os = new DefaultObjectConverter();
         }
@@ -60,6 +38,7 @@ public class ConversionUtils {
     public int byteToInt(byte[] b) {
         return byteToInt(b, 0);
     }
+
     public int byteToInt(byte[] b, int offset) {
         int n = 0;
         for (int i = offset; i < offset + 4; i++) {
@@ -89,6 +68,7 @@ public class ConversionUtils {
     public byte[] shortToBytes(int n) {
         return shortToBytes((short) n);
     }
+
     public byte[] shortToBytes(short n) {
         byte[] b = new byte[2];
         for (int i = 0; i < b.length; i++) {
@@ -100,6 +80,7 @@ public class ConversionUtils {
     public short byteToShort(byte[] b) {
         return byteToShort(b, 0);
     }
+
     public short byteToShort(byte[] b, int offset) {
         short n = 0;
         for (int i = offset; i < offset + 2; i++) {
@@ -109,12 +90,5 @@ public class ConversionUtils {
         return n;
     }
 
-    public static short crc16(byte[] ba) {
-        int work = 0xffff;
-        for (byte b : ba) {
-            work = (crcTable[(b ^ (work >>> 8)) & 0xff] ^ (work << 8)) &
-                    0xffff;
-        }
-        return (short) work;
-    }
+
 }
