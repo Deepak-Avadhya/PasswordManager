@@ -341,37 +341,6 @@ public class RBTree implements Externalizable {
         return counter[0];
     }
 
-    public static void main(String[] args) {
-        RBTree t = new RBTree();
-        t.print();
-
-        java.util.Random gen = new java.util.Random();
-
-        int dups = 0;
-        for (int i = 0; i < 5000; i++) {
-            int x = gen.nextInt(10000);
-            long y = gen.nextInt(10000);
-
-//            t.print();
-            System.out.print("" + x + " -> " + y + ",");
-            System.out.println();
-            if(t.lookup(x) != null){
-                dups++;
-            }
-            t.insert(x, y);
-            assert t.lookup(x)[0] == y;
-        }
-        System.out.print(String.format("Expected:%d, Actual: %d ", 5000 -dups, t.count()));
-        for (int i = 0; i < 60000; i++) {
-            int x = gen.nextInt(10000);
-
-//            t.print();
-            System.out.print("Deleting key " + x);
-            if (t.lookup(x) != null) {
-                t.delete(x, t.lookup(x)[0]);
-            }
-        }
-    }
 
     private int rehash(int h) {
         h ^= (h >>> 20) ^ (h >>> 12);
