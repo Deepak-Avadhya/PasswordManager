@@ -78,6 +78,7 @@ public class PasswordServiceImpl implements PasswordService {
     @Override
     public Boolean update(Entry entry, Boolean isEncrypt, String pHash) throws Exception {
         if (!isEntryValid(entry) || !isPhashValid(pHash)) throw new InvalidKeyException("entry or phash is invalid for given dir");
+        updatePhase(pHash);
         if (isEncrypt) {
             return update(encrypt(entry, pHash));
         } else {
@@ -111,12 +112,12 @@ public class PasswordServiceImpl implements PasswordService {
 
     public Boolean isPhashValid(String pHash) {
         if (StringUtils.isEmpty(pHash)) return false;
-        if (!storage.containsKey(Constants.PHASH_KEY)) {
-            storage.put(Constants.PHASH_KEY, pHash);
-            return true;
-        } else {
-            if (storage.get(Constants.PHASH_KEY).equals(pHash)) return true;
+        if (storage.containsKey(Constants.PHASH_KEY) && !pHash.equals(storage.get(Constants.PHASH_KEY))) {
+            return false;
         }
-        return false;
+        return true;
+    }
+    public void updatePhase(String pHash){
+        storage.put(Constants.PHASH_KEY, pHash);
     }
 }

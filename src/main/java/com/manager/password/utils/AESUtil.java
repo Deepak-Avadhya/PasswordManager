@@ -42,7 +42,7 @@ public class AESUtil {
     public  String encrypt(String input, String password)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
             InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
-        Cipher cipher = Cipher.getInstance("AES");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, getKeyFromPassword(password,Constants.DEFAULT_SALT), Constants.DEFAULT_IV);
         byte[] cipherText = cipher.doFinal(input.getBytes());
         return Base64.getEncoder()
@@ -62,7 +62,7 @@ public class AESUtil {
     public  String decrypt(String cipherText, String password)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
             InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
-        Cipher cipher = Cipher.getInstance("AES");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, getKeyFromPassword(password,Constants.DEFAULT_SALT), Constants.DEFAULT_IV);
         byte[] plainText = cipher.doFinal(Base64.getDecoder()
                 .decode(cipherText));

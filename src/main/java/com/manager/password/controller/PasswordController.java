@@ -74,6 +74,7 @@ public class PasswordController {
         }
         try {
             Entry res = passwordService.read(new Entry(key,null),isEncrypt,passwordService.getHash(password));
+            if(res.getValue()==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             return new ResponseEntity<>(gson.toJson(res),HttpStatus.ACCEPTED);
         } catch (InvalidKeyException e){
             e.printStackTrace();
